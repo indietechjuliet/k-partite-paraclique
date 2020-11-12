@@ -9,8 +9,8 @@
 using namespace std;
 
 
-
-
+void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix);
+void resetIntrapartiteEdges(vector < vector <int> > &matrix);
 int findIndex(string target, vector < string> &nodes);
 void printMatrix( vector < vector <int> > &matrix);
 vector <int> returnFirstClique(vector <vector <int> > matrix, vector <int> partiteSets);
@@ -79,7 +79,8 @@ int main(int argc, char* argv[])
 		}
 
 	}
-
+	printMatrix(matrix);
+	cout<<endl<<endl;
 	addIntrapartiteEdges(matrix,  partiteSets);
 	vector <int> R;
 	vector < int> X;
@@ -91,6 +92,8 @@ int main(int argc, char* argv[])
 	cliques.insert(make_pair(5,temp));
 	multimap<int,vector <int>>::iterator it;
 
+	vector <int> paraclique = cliques.rbegin()->second;
+	/*
 	for ( it = cliques.begin(); it != cliques.end(); it++ )
 	{
 		cout<<it->first<<":   ";
@@ -98,8 +101,30 @@ int main(int argc, char* argv[])
 		{
 			cout<<it->second[i]<<" ";
 		}
+
               
 	}
+	*/
+	resetIntrapartiteEdges(matrix);
+	printMatrix(matrix);
+	computeParaclique(glom, paraclique, matrix);
+}
+
+void resetIntrapartiteEdges(vector < vector <int> > &matrix)
+{
+	for(int i = 0; i < matrix[0].size(); i++)
+	{
+		for(int j = 0; j < matrix[0].size(); j++)
+		{
+			if(matrix[i][j] == 2)
+				matrix[i][j] = 0;
+		}
+	}
+}
+
+void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix)
+{
+
 
 }
 
