@@ -9,7 +9,8 @@
 using namespace std;
 
 
-void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix);
+bool allConnected(vector <int> R, vector <vector <int > > matrix);
+void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix, ofstream& fout);
 bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matrix,  vector < int >  &paraclique);
 void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix);
 void resetIntrapartiteEdges(vector < vector <int> > &matrix);
@@ -81,8 +82,8 @@ int main(int argc, char* argv[])
 		}
 
 	}
-	printMatrix(matrix);
-	cout<<endl<<endl;
+	//printMatrix(matrix);
+	//cout<<endl<<endl;
 	addIntrapartiteEdges(matrix,  partiteSets);
 	vector <int> R;
 	vector < int> X;
@@ -92,29 +93,40 @@ int main(int argc, char* argv[])
 	vector <int> paraclique = cliques.rbegin()->second;
 	
 	resetIntrapartiteEdges(matrix);
-	printMatrix(matrix);
 
-	cout<<endl<<endl;
+	string outname = argv[1];
+	
+	ofstream fout;
+	outname = outname.substr(0, outname.size()-4);
+        outname += "_paraclique.txt";
+
+	fout.open(outname);
+
+	fout<<"Paraclique before imputed edges:\n";
+	for(int i = 0; i < paraclique.size(); i++)
+		fout<<paraclique[i]<<" ";
+	fout<<'\n';
 	computeParaclique(glom, paraclique, matrix);
-	printMatrix(matrix);
+	//printMatrix(matrix);
 
-
-	printParacliqueandImputed(paraclique, matrix);
+	printParacliqueandImputed(paraclique, matrix, fout);
+	fout.close();
+	cout<<"Maximum paraclique and Imputed edges in "<<outname<<'\n';
 }
 
-void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix)
+void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix, ofstream& fout)
 {
-	cout<<"Complete Paraclique with Imputed Edges:\n";
+	fout<<"Complete Paraclique with Imputed Edges:\n";
 	for(int i = 0; i < paraclique.size(); i++)
-		cout<<paraclique[i]<<" ";
-	cout<<endl<<endl<<"Imputed Edges:\n";
+		fout<<paraclique[i]<<" ";
+	fout<<"\n\nImputed Edges:\n";
 
 	for(int i = 0; i < matrix[0].size(); i++)
 	{
 		for(int j = 0; j <= i; j++)
 		{
 			if(matrix[i][j] == 2)
-				cout <<i<<" "<<j<<'\n';
+				fout <<i<<" "<<j<<'\n';
 		}
 	}
 }
@@ -188,7 +200,7 @@ void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, v
 {
 	if(P.size() == 0 && X.size() == 0)
 	{
-		if(coverPartition(R, partiteSets))
+		if(coverPartition(R, partiteSets) && allConnected(R,matrix))
 		{
 			cliques.insert(make_pair(R.size(), R));
 	
@@ -218,6 +230,18 @@ void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, v
 
 }
 
+bool allConnected(vector <int> R, vector <vector <int > > matrix)
+{
+        for(int i = 0; i < R.size(); i++)
+        {
+                for(int j = i+1; j < R.size(); j++)
+                {
+                        if(matrix[R[i]][R[j]] == 0)
+                                return false;
+                }
+        }
+        return true;
+}
 
 vector <int> intersection( vector <int> setA, vector <int> matrixRow)
 {
