@@ -9,6 +9,7 @@
 using namespace std;
 
 
+bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matrix,  vector < int >  &paraclique);
 void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix);
 void resetIntrapartiteEdges(vector < vector <int> > &matrix);
 int findIndex(string target, vector < string> &nodes);
@@ -86,28 +87,18 @@ int main(int argc, char* argv[])
 	vector < int> X;
 	enumerate(matrix, R, P, X, partiteSets, cliques);
 	
-	vector <int> temp = {1,3,5};
-	cliques.insert(make_pair(3,temp));
-	temp = {1, 6 , 7, 2, 5};
-	cliques.insert(make_pair(5,temp));
-	multimap<int,vector <int>>::iterator it;
 
 	vector <int> paraclique = cliques.rbegin()->second;
-	/*
-	for ( it = cliques.begin(); it != cliques.end(); it++ )
-	{
-		cout<<it->first<<":   ";
-    		for(int i = 0; i < it->second.size(); i++)
-		{
-			cout<<it->second[i]<<" ";
-		}
-
-              
-	}
-	*/
+	
 	resetIntrapartiteEdges(matrix);
 	printMatrix(matrix);
+
+	cout<<endl<<endl;
 	computeParaclique(glom, paraclique, matrix);
+	printMatrix(matrix);
+
+
+	//printParacliqueandImputed(paraclique, matrix);
 }
 
 void resetIntrapartiteEdges(vector < vector <int> > &matrix)
@@ -124,9 +115,57 @@ void resetIntrapartiteEdges(vector < vector <int> > &matrix)
 
 void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix)
 {
+	vector <int> vBar;
+	for(int i = 0; i < matrix[0].size(); i++)
+	{
+		vector <int>::iterator it;
+		it = find(paraclique.begin(), paraclique.end(), i);
+		if(it ==paraclique.end())
+			vBar.push_back(i);
+	}
+	
+	bool recheck = false;
+	do
+	{
+		recheck = false;
+		bool innerrecheck = false;
+		for(int i = 0; i < vBar.size(); i++)
+		{
+			innerrecheck = countAdjacentAddImputed(vBar[i], glom,  matrix, paraclique);
+			if(!recheck && innerrecheck)
+				recheck = true;
 
+		}
+
+	}while(recheck);
+		
 
 }
+
+bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matrix,  vector < int >  &paraclique)
+{
+	vector <int> temp;
+	for(int i = 0; i < paraclique.size(); i++)
+	{
+		if(matrix[target][paraclique[i]] != 1)
+			temp.push_back(paraclique[i]);
+	}
+
+	if((glom) >= temp.size())
+	{
+		
+		for(int i = 0; i < temp.size(); i++)
+		{
+			matrix[temp[i]][target] = 2;
+			matrix[target][temp[i]] = 2;
+		}
+		paraclique.push_back(target);
+
+		return true;
+	}
+	return false;
+}
+
 
 void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, vector <int> X, vector <int> partiteSets, multimap<int,vector <int>> &cliques )
 {
