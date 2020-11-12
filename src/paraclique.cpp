@@ -9,6 +9,7 @@
 using namespace std;
 
 
+void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix);
 bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matrix,  vector < int >  &paraclique);
 void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> > &matrix);
 void resetIntrapartiteEdges(vector < vector <int> > &matrix);
@@ -98,9 +99,25 @@ int main(int argc, char* argv[])
 	printMatrix(matrix);
 
 
-	//printParacliqueandImputed(paraclique, matrix);
+	printParacliqueandImputed(paraclique, matrix);
 }
 
+void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix)
+{
+	cout<<"Complete Paraclique with Imputed Edges:\n";
+	for(int i = 0; i < paraclique.size(); i++)
+		cout<<paraclique[i]<<" ";
+	cout<<endl<<endl<<"Imputed Edges:\n";
+
+	for(int i = 0; i < matrix[0].size(); i++)
+	{
+		for(int j = 0; j <= i; j++)
+		{
+			if(matrix[i][j] == 2)
+				cout <<i<<" "<<j<<'\n';
+		}
+	}
+}
 void resetIntrapartiteEdges(vector < vector <int> > &matrix)
 {
 	for(int i = 0; i < matrix[0].size(); i++)
