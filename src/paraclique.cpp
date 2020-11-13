@@ -8,7 +8,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-
 bool allConnected(vector <int> R, vector <vector <int > > matrix);
 void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix, ofstream& fout);
 bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matrix,  vector < int >  &paraclique);
@@ -19,7 +18,7 @@ void printMatrix( vector < vector <int> > &matrix);
 vector <int> returnFirstClique(vector <vector <int> > matrix, vector <int> partiteSets);
 void addIntrapartiteEdges(vector <vector < int> > &matrix, vector <int> partiteSets);
 void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, vector <int> X, vector <int> partiteSets, multimap<int,vector <int>> &cliques );
-int choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix);
+vector <int> choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix);
 vector <int> intersection( vector <int> setA, vector <int> matrixRow);
 int coverPartition(vector <int> R, vector <int> partiteSets);
 
@@ -90,8 +89,9 @@ int main(int argc, char* argv[])
 	enumerate(matrix, R, P, X, partiteSets, cliques);
 	
 
-	vector <int> paraclique = cliques.rbegin()->second;
-	
+	vector <int> paraclique;
+	int maxcliquesize = cliques.rbegin()->first;
+
 	resetIntrapartiteEdges(matrix);
 
 	string outname = argv[1];
@@ -101,15 +101,28 @@ int main(int argc, char* argv[])
         outname += "_paraclique.txt";
 
 	fout.open(outname);
+	
+	multimap <int, vector <int > >::iterator it;
+	it = cliques.begin();
 
-	fout<<"Paraclique before imputed edges:\n";
-	for(int i = 0; i < paraclique.size(); i++)
-		fout<<paraclique[i]<<" ";
-	fout<<'\n';
-	computeParaclique(glom, paraclique, matrix);
-	//printMatrix(matrix);
+	for(it = cliques.begin(); it != cliques.end(); it++)
+	{
+		if(it->first >= maxcliquesize)
+		{
+			paraclique = it->second;
+			fout<<"Paraclique before imputed edges:\n";
+			for(int i = 0; i < paraclique.size(); i++)
+				fout<<paraclique[i]<<" ";
+			fout<<'\n';
+			computeParaclique(glom, paraclique, matrix);
+			//printMatrix(matrix);
 
-	printParacliqueandImputed(paraclique, matrix, fout);
+			printParacliqueandImputed(paraclique, matrix, fout);
+			fout<<endl<<endl;
+		}
+	}
+	
+	
 	fout.close();
 	cout<<"Maximum paraclique and Imputed edges in "<<outname<<'\n';
 }
@@ -208,22 +221,27 @@ void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, v
 		//cout<<"returning"<<endl;
 		return;
 	}
-	int pivot = choosePivot(P, X, matrix);
-	if (pivot != -1)
+	vector <int>  pivot = choosePivot(P, X, matrix);
+	if (pivot.size() > 0)
 	{
-		for(int v = 0; v < matrix[pivot].size(); v++)
+		for(int f =0; f < pivot.size(); f++)
 		{
-			vector <int>::iterator it;
-			it = find(P.begin(), P.end(), v);
-			if(it != P.end() && matrix[pivot][v]  == 0)
+			for(int v = 0; v < matrix[pivot[f]].size(); v++)
 			{
-				R.push_back(v);
+				vector <int>::iterator it;
+				it = find(P.begin(), P.end(), v);
+				if(it != P.end() && matrix[pivot[f]][v]  == 0)
+				{
 
-				vector <int> PnNv = intersection(P, matrix[v]);
-				vector <int> XnNv = intersection(X, matrix[v]);
-				enumerate(matrix, R, PnNv, XnNv, partiteSets, cliques);
-				P.erase(it);
-				X.push_back(v);
+
+					vector <int> PnNv = intersection(P, matrix[v]);
+					vector <int> XnNv = intersection(X, matrix[v]);
+					R.push_back(v);
+					enumerate(matrix, R, PnNv, XnNv, partiteSets, cliques);
+					P.erase(it);
+					X.push_back(v);
+					R.pop_back();
+				}
 			}
 		}
 	}
@@ -258,13 +276,14 @@ vector <int> intersection( vector <int> setA, vector <int> matrixRow)
 	}
 	return intersect;
 }
-int choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix)
+vector <int> choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix)
 {
 	vector <int> PuX;
 
 	PuX = P;
 
-	int pivot = -1;
+	vector <int> pivot;
+	vector <pair < int, int> > temp;
 	vector<int>::iterator it;
 	for(int i = 0; i < X.size(); i++)
 	{
@@ -272,11 +291,11 @@ int choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix)
 		if(it == PuX.end())
 			PuX.push_back(X[i]);
 	}
-	
+
 	//cout<<"PUX size:"<<PuX.size();
 	if(PuX.size() == 1)
 	{
-		pivot  = PuX[0];
+		pivot.push_back(PuX[0]);
 		return pivot;
 	}
 	int maxcount = 0;
@@ -290,18 +309,30 @@ int choosePivot(vector <int> P , vector <int> X, vector < vector <int >> matrix)
 			if(Nu[n] != 0 && it != P.end())
 				count++;
 		}
-		if(count > maxcount)
+
+		temp.push_back(make_pair(PuX[u], count));
+		if(count >= maxcount)
 		{
 			maxcount = count;
-			pivot = PuX[u];
+			//pivot.push_back(PuX[u]);
 		}
 
 	}
 
+	for(int i = 0; i < temp.size(); i++)
+	{
+		if(temp[i].second == maxcount)
+		{
+			pivot.push_back(temp[i].first);
+			//cout<<"PIV: "<<temp[i].first<<endl;
+		}
+	}
+
+
+
 	return pivot;
 
 }
-
 int coverPartition(vector <int> R, vector <int> partiteSets)
 {
 	//cout<<"IN COVER"<<endl;
