@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 	
 	multimap <int, vector <int > >::iterator it;
 	it = cliques.begin();
-
+	
 	for(it = cliques.begin(); it != cliques.end(); it++)
 	{
 		if(it->first >= maxcliquesize)
