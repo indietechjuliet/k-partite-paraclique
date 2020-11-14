@@ -5,8 +5,8 @@ This code is a modification of my MCME k-partite maximal paraclique finder. This
 # Maximal k-Partite Paraclique Implementation
 A C++ implementation of maximal k-partite clique algorithm outlined in the paper:  doi: 10.3390/a12010023 and a paraclique finding algorithm outlined in the paper: doi: 10.1016/j.dam.2015.11.010
 
-![image](https://github.com/indietechjuliet/maximal-k-partite-cliques/blob/main/mmce_algorithm.png)
-![image](https://github.com/indietechjuliet/maximal-k-partite-paraclique/blob/main/paraclique_algorithm.png)
+![image](https://github.com/indietechjuliet/k-partite-paraclique/blob/main/mmce_algorithm.png)
+![image](https://github.com/indietechjuliet/k-partite-paraclique/blob/main/paraclique_algorithm.png)
 <br /><br /><br />
 Instructions: <br />
 compile with the following <br />
