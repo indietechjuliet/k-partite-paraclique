@@ -8,6 +8,8 @@ Imputed Edges:
 6 2
 7 3
 7 6
+
+
 Paraclique before imputed edges:
 6 3 5 
 Complete Paraclique with Imputed Edges:
@@ -18,3 +20,5 @@ Imputed Edges:
 6 2
 7 3
 7 6
+
+
