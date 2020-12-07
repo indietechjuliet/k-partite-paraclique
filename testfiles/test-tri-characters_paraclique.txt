@@ -1,0 +1,18 @@
+3-partite clique before imputed edges:
+gene-entry well_connected how hard it be 
+Complete Paraclique with Imputed Edges:
+gene-entry well_connected how hard it be just 3 
+
+Imputed Edges:
+just 3 gene-entry
+
+
+3-partite clique before imputed edges:
+gene-entry well_connected test*.003 
+Complete Paraclique with Imputed Edges:
+gene-entry well_connected test*.003 how hard it be 
+
+Imputed Edges:
+test*.003 how hard it be
+
+

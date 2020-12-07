@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include<bits/stdc++.h>
+#include "inputprep.h"
 using namespace std;
 
 
@@ -17,11 +18,11 @@ using namespace std;
 //partite sets for finding maximal cliques, remove these edges
 void resetIntrapartiteEdges(vector < vector <int> > &matrix)
 {
-	for(int i = 0; i < matrix[0].size(); i++)
+	for(int i = 0; i < matrix.size(); i++)
 	{
-		for(int j = 0; j < matrix[0].size(); j++)
+		for(int j = 0; j < matrix[i].size(); j++)
 		{
-			if(matrix[i][j] == 2)
+			if(matrix[i][j] == 3)
 				matrix[i][j] = 0;
 		}
 	}
@@ -31,47 +32,26 @@ void resetIntrapartiteEdges(vector < vector <int> > &matrix)
 //Adds the intrapartite edges to the graphs as 2's instead of 1's so we can remove
 //these edges later if needed. These edges are needed for the maximal clique finding to work.
 
-void addIntrapartiteEdges(vector <vector < int> > &matrix, vector <int> partiteSets)
+void addIntrapartiteEdges(vector <vector < int> > &matrix, vector <set<int> >& partiteSets)
 {
+	set<int>::iterator j,k;
+
 	for(int i = 0; i < partiteSets.size(); i++)
 	{
-		if(i+1 < partiteSets.size())
+		j=partiteSets[i].begin();
+		while(j!=partiteSets[i].end())
 		{
-			int cap = partiteSets[i+1];
-			for(int a  = partiteSets[i]; a < cap; a++)
+			k=j;
+			k++;
+			while (k!=partiteSets[i].end())
 			{
-				for(int b = partiteSets[i]; b < cap; b++)
-				{
-					//do not add self edges
-					if(a != b)
-					{
-						matrix[a][b] = 2;
-						matrix[b][a] = 2;
-					}
-				}
-			}	
-
-		}
-		//last column of each row is a special case
-		else
-		{
-			for(int a = partiteSets[i]; a < matrix[0].size(); a++)
-			{
-				for(int b = partiteSets[i]; b < matrix[0].size(); b++)
-				{
-					//do not add self edges
-					if(a != b)
-
-					{
-						matrix[a][b] = 2;
-						matrix[b][a] =2;
-					}
-				}
+				matrix[*j][*k]=2;
+				matrix[*k][*j]=2;
+				k++;
 			}
-
+			j++;
 		}
 	}
-
 }
 
 

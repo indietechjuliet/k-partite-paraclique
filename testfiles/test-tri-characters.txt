@@ -1,0 +1,12 @@
+4	2	3	11
+"this guy"	"some stuff"
+over|here	"some stuff"
+gene-entry	"some stuff"
+gene-entry	well_connected
+just 3	well_connected
+	well_connected	how hard it be
+	well_connected	test*.003
+gene-entry		how hard it be
+gene-entry		test*.003
+just 3		how hard it be
+just 3		8

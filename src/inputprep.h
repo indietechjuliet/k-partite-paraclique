@@ -8,7 +8,8 @@
 #include <sstream>
 #include <vector>
 #include<bits/stdc++.h>
-using namespace std;
-void addIntrapartiteEdges(vector <vector < int> > &matrix, vector <int> partiteSets);
 
-void resetIntrapartiteEdges(vector < vector <int> > &matrix);
+using namespace std;
+void addIntrapartiteEdges(vector <vector < int> > &, vector <set<int> >&);
+
+void resetIntrapartiteEdges(vector < vector <int> > &);

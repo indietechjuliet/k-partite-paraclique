@@ -2,30 +2,26 @@
 *Date Last Modified: Nov. 14, 2020
 */
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <map>
-#include<bits/stdc++.h>
-using namespace std;
+
+#include "paraclique.h"
+
+
+
 
 //prints the current nodes in the paraclique and the imputed edges
-void printParacliqueandImputed(vector <int> paraclique,vector <vector <int> > matrix, ofstream& fout)
+void printParacliqueandImputed(vector <int> paraclique, Graph &g, ofstream& fout)
 {
 	fout<<"Complete Paraclique with Imputed Edges:\n";
 	for(int i = 0; i < paraclique.size(); i++)
-		fout<<paraclique[i]<<" ";
+		fout<<g.label_map[paraclique[i]]<<" ";
 	fout<<"\n\nImputed Edges:\n";
 
-	for(int i = 0; i < matrix[0].size(); i++)
+	for(int i = 0; i < g.matrix[0].size(); i++)
 	{
 		for(int j = 0; j <= i; j++)
 		{
-			if(matrix[i][j] == 2)
-				fout <<i<<" "<<j<<'\n';
+			if(g.matrix[i][j] == 3)
+				fout <<g.label_map[i]<<" "<<g.label_map[j]<<'\n';
 		}
 	}
 }
@@ -38,12 +34,13 @@ bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matr
 	vector <int> temp;
 	//for every node in the current paracclique that is not connected to the target node,
 	//add to the temporary vector
+	//cout<<"paraclique size: "<<paraclique.size()<<"\n";
 	for(int i = 0; i < paraclique.size(); i++)
 	{
-		if(matrix[target][paraclique[i]] != 1)
+		if(matrix[target][paraclique[i]] != 1 && matrix[target][paraclique[i]] != 2)
 			temp.push_back(paraclique[i]);
 	}
-
+	//cout<<"glom: "<<glom<<" temp size: "<<temp.size()<<"\n";
 	//If the target node is not connected to fewer vertices than the glom factor, add the imputed 
 	//edges and add theis node to the paraclique
 	if((glom) >= temp.size())
@@ -51,8 +48,8 @@ bool countAdjacentAddImputed(int target, int glom, vector < vector <int> > &matr
 		
 		for(int i = 0; i < temp.size(); i++)
 		{
-			matrix[temp[i]][target] = 2;
-			matrix[target][temp[i]] = 2;
+			matrix[temp[i]][target] = 3;
+			matrix[target][temp[i]] = 3;
 		}
 		paraclique.push_back(target);
 
@@ -80,6 +77,7 @@ void computeParaclique(int glom, vector <int> &paraclique, vector <vector <int> 
 		bool innerrecheck = false;
 		for(int i = 0; i < vBar.size(); i++)
 		{
+			//cout<<"doing inner check\n";
 			innerrecheck = countAdjacentAddImputed(vBar[i], glom,  matrix, paraclique);
 			if(!recheck && innerrecheck)
 				recheck = true;

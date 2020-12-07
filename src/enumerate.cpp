@@ -25,14 +25,16 @@ using namespace std;
 *a list of the partite set boundaries (parititeSets) used for checking if R covers all partiteSets,
 *and an output stream for outputting maximal cliques (fout)
 */
-void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, vector <int> X, vector <int> partiteSets, multimap<int,vector <int>> &cliques )
+void enumerate(vector <vector <int > > matrix, vector <int> R, vector <int> P, vector <int> X, vector <set<int> >& partiteSets, multimap<int,vector <int>> &cliques )
 {
+	
 	//If there are no more vertices that can extend the clique
 	if(P.size() == 0 && X.size() == 0)
 	{
 		//outtput maximal clique to the output file
 		if(coverPartition(R, partiteSets) && allConnected(R,matrix))
 		{
+			//cout<<"found a maximum clique\n";
 			cliques.insert(make_pair(R.size(), R));
 	
 		}
@@ -89,7 +91,7 @@ vector <int> intersection( vector <int> setA, vector <int> matrixRow)
 	for(int i = 0; i < matrixRow.size(); i++)
 	{
 		it = find(setA.begin(), setA.end(), i);
-		if(it != setA.end() && matrixRow[i] == 1)
+		if(it != setA.end() && matrixRow[i] != 0)
 		{
 			intersect.push_back(i);
 		}
@@ -161,51 +163,35 @@ vector <int> choosePivot(vector <int> P , vector <int> X, vector < vector <int >
 /*coverPartition() - takes a clique and the boundaries of each disjoint set in the graph
 *Output: returns true or false if the clique covers all partite sets of the graph
 */
-int coverPartition(vector <int> R, vector <int> partiteSets)
+int coverPartition(vector <int> R, vector <set<int> >& partiteSets)
 {
-	
+	//cout<<"checking if partion is covered\n";
 	vector <int> found;
 	found.resize(partiteSets.size(), 0);
-	for(int i = 0; i < partiteSets.size(); i++)
+
+	for(int i = 0; i < R.size(); ++i)
 	{
-		if(i+1 < partiteSets.size())
+		for (int j = 0; j < partiteSets.size(); ++j)
 		{
-			for(int node = 0; node < R.size(); node++)
+			if (!found[j] && partiteSets[j].find(R[i])!=partiteSets[j].end())
 			{
-				if (R[node] > partiteSets[i] && R[node] < partiteSets[i+1])
-				{
-					if(found[i] ==1)
-					{
-
-					}
-					found[i] = 1;
-					break;
-				}
-
+				found[j]=1;
+				//cout<<R[i]<<" covers partition "<<j<<"\n";
+				break;
 			}
-
-		}
-		else
-		{
-			for(int node = 0; R.size(); node++)
-			{
-				if(R[node] > partiteSets[i])
-				{
-					found[i] = 1;
-					break;
-				}
-			}
-
 		}
 	}
-
 	for(int i = 0; i < found.size(); i++)
 	{
+		//cout<<"found "<<i<<" is "<<found[i]<<"\n";
 		if(found[i] == 0)
+		{
+			//cout<<i<<" partition is missing\n";
 			return false;
+		}
 	}
-	return true;
-
+	//cout<<"partition is covered\n";
+	return true;	
 }
 
 
